@@ -1,17 +1,23 @@
-import CreateUserDTO from "../../../dtos/user/CreateUserDTO";
-import { DefaultRepository } from "../../../persistence/defaultRepository";
-import User from "../../model/User";
+import CreateUserDTO from "../../../interfaces/user/CreateUserDTO";
+import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
 import { z } from "zod";
+import UserMapper from "../../mapper/userMapper";
+import User from "../../../interfaces/user/User";
+import ListUserDTO from "../../../interfaces/user/ListUserDTO";
 
 export default class CreateUserService {
-	constructor(private repository: DefaultRepository) {}
+	constructor(private repository: DefaultUserRepository) {}
 
-	async handle(rawData: object): Promise<User> {
+	async handle(body: object): Promise<ListUserDTO> {
 		try {
-			const parsedBody = this.validBody(rawData);
-            const user = new User({...parsedBody})
-            const result = await this.repository.save(user);
-            return result;
+			const parsedBody: CreateUserDTO = this.validBody(body);
+
+			const mapper = new UserMapper();
+			const user = mapper.toPersistence({ ...parsedBody });
+			user.password = "funcao para hash";
+
+			const result = await this.repository.save(user);
+			return mapper.toListDto({ ...result });
 		} catch (error) {
 			console.log(error);
 			throw error;

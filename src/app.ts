@@ -1,5 +1,4 @@
 import express from "express";
-import User from "./business/model/User";
 import userRouter from "./presentation/routes/userRoutes";
 
 const app = express();
