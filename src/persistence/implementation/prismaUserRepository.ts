@@ -4,23 +4,25 @@ import User, { UserType } from "../../interfaces/user/User";
 import { TransferType } from "../../interfaces/transfer/Transfer";
 import { number } from "zod";
 
-export type PrismaOperation = { decrement: number; }  | {increment?: number };
+export type PrismaOperation = { decrement: number } | { increment?: number };
 export class PrismaUserRepository implements DefaultUserRepository {
 	constructor(private client: PrismaClient) {}
 
 	async save(rawData: Omit<User, "id">): Promise<User> {
 		try {
-			const result = await this.client.user.create({
-				data: {
-					...rawData,
-				},
-			});
+			return await this.client.$transaction(async (operation) => {
+				const result = await operation.user.create({
+					data: {
+						...rawData,
+					},
+				});
 
-			return {
-				...result,
-				balance: result.balance as unknown as number,
-				type: result.type as UserType,
-			};
+				return {
+					...result,
+					balance: result.balance as unknown as number,
+					type: result.type as UserType,
+				};
+			});
 		} catch (error) {
 			console.log(error);
 			throw error;
@@ -48,22 +50,24 @@ export class PrismaUserRepository implements DefaultUserRepository {
 		}
 	}
 
-	async updateBalance(userId: number, operation: PrismaOperation) {
+	async updateBalance(userId: number, optionOperation: PrismaOperation) {
 		try {
-			const result = await this.client.user.update({
-				data: {
-					balance: operation,
-				},
-				where: {
-					id: userId
-				}
+			return await this.client.$transaction(async (operation) => {
+				const result = await operation.user.update({
+					data: {
+						balance: optionOperation,
+					},
+					where: {
+						id: userId,
+					},
+				});
+
+				return {
+					...result,
+					balance: result.balance as unknown as number,
+					type: result.type as UserType,
+				};
 			});
-			
-			return {
-				...result,
-				balance: result.balance as unknown as number,
-				type: result.type as UserType,
-			};
 		} catch (error) {
 			console.log(error);
 			throw error;
