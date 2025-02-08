@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { DefaultUserRepository } from "../defaultUserRepository";
 import User, { UserType } from "../../interfaces/user/User";
+import { TransferType } from "../../interfaces/transfer/Transfer";
+import { number } from "zod";
 
+export type PrismaOperation = { decrement: number; }  | {increment?: number };
 export class PrismaUserRepository implements DefaultUserRepository {
 	constructor(private client: PrismaClient) {}
 
@@ -16,8 +19,8 @@ export class PrismaUserRepository implements DefaultUserRepository {
 			return {
 				...result,
 				balance: result.balance as unknown as number,
-				type: result.type as UserType
-			}
+				type: result.type as UserType,
+			};
 		} catch (error) {
 			console.log(error);
 			throw error;
@@ -28,17 +31,39 @@ export class PrismaUserRepository implements DefaultUserRepository {
 		try {
 			const result = await this.client.user.findFirst({
 				where: {
-					id
-				}
+					id,
+				},
 			});
 
-			if(!result) return null
+			if (!result) return null;
 
 			return {
 				...result,
 				balance: result.balance as unknown as number,
-				type: result.type as UserType
-			}
+				type: result.type as UserType,
+			};
+		} catch (error) {
+			console.log(error);
+			throw error;
+		}
+	}
+
+	async updateBalance(userId: number, operation: PrismaOperation) {
+		try {
+			const result = await this.client.user.update({
+				data: {
+					balance: operation,
+				},
+				where: {
+					id: userId
+				}
+			});
+			
+			return {
+				...result,
+				balance: result.balance as unknown as number,
+				type: result.type as UserType,
+			};
 		} catch (error) {
 			console.log(error);
 			throw error;

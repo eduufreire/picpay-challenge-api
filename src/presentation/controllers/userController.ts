@@ -23,7 +23,8 @@ export default class UserController {
 
 	async getById(request: Request, response: Response): Promise<any> {
 		try {
-			const result = await this.getService.handle(request);
+			const { id } = request.params;
+			const result = await this.getService.handle(Number(id));
 			return response.status(200).json(result);
 		} catch (error) {
 			console.log(error);

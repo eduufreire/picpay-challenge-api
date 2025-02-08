@@ -1,14 +1,13 @@
 import { Request } from "express";
 import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
+import User from "../../../interfaces/user/User";
 
 export default class GetUserService {
 	constructor(private repository: DefaultUserRepository) {}
 
-	async handle(request: Request): Promise<any> {
+	async handle(id: number): Promise<User> {
 		try {
-			const id  = request.params.id;
-			if(!id) throw new Error("not found");
-			const result = await this.repository.getById(Number(id));
+			const result = await this.repository.getById(id);
 
 			if(!result) throw new Error("not found");
 			return result;
