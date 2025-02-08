@@ -6,14 +6,14 @@ import { UserType } from "../../../interfaces/user/User";
 import TransferMapper from "../../mapper/transferMapper";
 import { TransferType } from "../../../interfaces/transfer/Transfer";
 import UpdateBalanceService from "../user/updateBalance";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import AuthorizerService from "../authorizerService";
 
 export default class CreateTransferService {
 	constructor(
 		private getUserService: GetUserService,
-		private repository: DefaultTransferRepository,
 		private updateBalanceService: UpdateBalanceService,
+		private repository: DefaultTransferRepository,
 		private mapper = new TransferMapper(),
 	) {}
 
@@ -34,29 +34,46 @@ export default class CreateTransferService {
 				throw new Error("Lojista não pode tranferir");
 
 			const idPaymentTrace = uuidv4();
-			
+
 			const debitTransaction = this.mapper.toPersistente({
 				userId: payer.id,
 				amount: parsedBody.value,
 				type: TransferType.DEBIT,
-				idPaymentTrace
+				idPaymentTrace,
 			});
 			await this.updateBalanceService.handle({ ...debitTransaction });
-			const resultDebitTransaction = await this.repository.save(debitTransaction);
+			await this.repository.save(debitTransaction);
 
-            // TODO: realizar requisicao autorizador
-			const authorize = await axios.get("https://util.devi.tools/api/v2/authorize")
-			
+			const isValidTransfer = await AuthorizerService.checkTransfer({
+				...parsedBody,
+				amount: parsedBody.value,
+			});
+			if (!isValidTransfer) {
+				const reversalTransfer = this.mapper.toPersistente({
+					userId: payer.id,
+					amount: parsedBody.value,
+					type: TransferType.REVERSAL,
+					idPaymentTrace,
+				});
+				await this.updateBalanceService.handle({ ...reversalTransfer });
+				await this.repository.save(reversalTransfer);
+				throw new Error("Transação nao autorizada - Estorno realizado");
+			}
+
 			const creditTransaction = this.mapper.toPersistente({
 				userId: payee.id,
 				amount: parsedBody.value,
 				type: TransferType.CREDIT,
-				idPaymentTrace
+				idPaymentTrace,
 			});
 			await this.updateBalanceService.handle({ ...creditTransaction });
-			const resultCreditTransaction = await this.repository.save(creditTransaction);
+			await this.repository.save(creditTransaction);
 
-			return resultDebitTransaction;
+			return {
+				idPaymentTrace,
+				amount: parsedBody.value,
+				status: "success",
+			};
 		} catch (error) {
 			console.log(error);
 			throw error;

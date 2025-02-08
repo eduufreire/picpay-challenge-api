@@ -14,7 +14,7 @@ const repositoryUser = new PrismaUserRepository(prismaClient);
 
 const getUserService = new GetUserService(repositoryUser);
 const updateBalance = new UpdateBalanceService(repositoryUser);
-const createService = new CreateTransferService(getUserService, repository, updateBalance);
+const createService = new CreateTransferService(getUserService, updateBalance, repository);
 const transferController = new TransferController(createService);
 
 transferRouter.post("/", (request, response) => transferController.transfer(request, response));
