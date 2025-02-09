@@ -1,17 +1,20 @@
 import { Request } from "express";
 import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
+import { errorHandle } from "../../../utils/errorHandle";
+import { userMapper } from "../../mapper/userMapper";
+import ListUserDTO from "../../../interfaces/user/ListUserDTO";
 
 export default class GetUserService {
 	constructor(private repository: DefaultUserRepository) {}
 
-	async handle(request: Request): Promise<any> {
+	async handle(id: number): Promise<ListUserDTO> {
 		try {
-			const id  = request.params.id;
-			if(!id) throw new Error("not found");
-			const result = await this.repository.getById(Number(id));
+			const result = await this.repository.getById(id);
 
-			if(!result) throw new Error("not found");
-			return result;
+			if (!result)
+				throw errorHandle.throwException("UserException", "User not found", 404);
+
+			return userMapper.toListDto(result);
 		} catch (error) {
 			console.log(error);
 			throw error;
