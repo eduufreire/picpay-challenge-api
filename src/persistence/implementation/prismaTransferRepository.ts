@@ -32,4 +32,36 @@ export default class PrismaTransferRepository implements DefaultTransferReposito
 			throw error;
 		}
 	}
+
+	async getByPaymentTrace(idPaymentTrace: string): Promise<Transfer[]> {
+		try {
+			const result = await this.client.transaction.findMany({
+				where: {
+					idPaymentTrace,
+				},
+				include: {
+					user: true,
+				},
+			});
+
+			const convertedResult = [];
+			for (const element of result) {
+				convertedResult.push({
+					...element,
+					amount: element.amount as unknown as number,
+					type: element.type as TransferType,
+					createdAt: element.createdAt,
+				});
+			}
+			return convertedResult;
+		} catch (error) {
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError ||
+				error instanceof Prisma.PrismaClientUnknownRequestError
+			) {
+				throw errorHandle.throwException("DatabaseException", error.message, 500);
+			}
+			throw error;
+		}
+	}
 }

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import CreateUserService from "../../business/services/user/create";
 import GetUserService from "../../business/services/user/get";
 import { CustomException } from "../../utils/errorHandle";
+import { userMapper } from "../../business/mapper/userMapper";
 
 export default class UserController {
 	constructor(
@@ -11,9 +12,6 @@ export default class UserController {
 
 	async create(request: Request, response: Response): Promise<any> {
 		try {
-			const keys = Object.keys(request.body);
-			if (!keys.length) throw new Error("Invalid Body");
-
 			const result = await this.createService.handle(request.body);
 			return response.status(201).json(result);
 		} catch (error) {

@@ -3,27 +3,34 @@ import { DefaultTransferRepository } from "../../../persistence/defaultTransferR
 import { z } from "zod";
 import GetUserService from "../user/get";
 import { UserType } from "../../../interfaces/user/User";
-import TransferMapper from "../../mapper/transferMapper";
 import { TransferType } from "../../../interfaces/transfer/Transfer";
 import UpdateBalanceService from "../user/updateBalance";
 import { v4 as uuidv4 } from "uuid";
 import AuthorizerService from "../authorizerService";
 import { CustomException, errorHandle } from "../../../utils/errorHandle";
+import ParserData from "../../../utils/parserData";
+import { schemaTransfer } from "../../../utils/schemasZod";
+import { transferMapper } from "../../mapper/transferMapper";
+
+type EffectTransfer = {
+	userId: number;
+	amount: number;
+	idPaymentTrace: string;
+	type: TransferType;
+};
 
 export default class CreateTransferService {
 	constructor(
 		private getUserService: GetUserService,
 		private updateBalanceService: UpdateBalanceService,
 		private repository: DefaultTransferRepository,
-		private mapper = new TransferMapper(),
 	) {}
 
 	async handle(rawData: object) {
 		try {
-			const parsedBody: CreateTransferDTO = this.validBody(rawData);
+			const parsedBody: CreateTransferDTO = ParserData.valid(schemaTransfer, rawData);
 
 			const payer = await this.getUserService.handle(parsedBody.payer);
-
 			const payee = await this.getUserService.handle(parsedBody.payee);
 
 			if (payer.balance < parsedBody.value)
@@ -41,44 +48,33 @@ export default class CreateTransferService {
 				);
 
 			const idPaymentTrace = uuidv4();
-
-			const debitTransaction = this.mapper.toPersistente({
+			await this.effectTransfer({
 				userId: payer.id,
 				amount: parsedBody.value,
 				type: TransferType.DEBIT,
 				idPaymentTrace,
 			});
-			await this.updateBalanceService.handle({ ...debitTransaction });
-			await this.repository.save(debitTransaction);
 
 			const isValidTransfer = await AuthorizerService.checkTransfer({
 				...parsedBody,
 				amount: parsedBody.value,
 			});
 			if (!isValidTransfer) {
-				const reversalTransfer = this.mapper.toPersistente({
+				await this.effectTransfer({
 					userId: payer.id,
 					amount: parsedBody.value,
 					type: TransferType.REVERSAL,
 					idPaymentTrace,
 				});
-				await this.updateBalanceService.handle({ ...reversalTransfer });
-				await this.repository.save(reversalTransfer);
-				errorHandle.throwException(
-					"TransferException",
-					"Unauthorized transfer",
-					403,
-				);
+				errorHandle.throwException("TransferException", "Unauthorized transfer", 403);
 			}
 
-			const creditTransaction = this.mapper.toPersistente({
+			await this.effectTransfer({
 				userId: payee.id,
 				amount: parsedBody.value,
 				type: TransferType.CREDIT,
 				idPaymentTrace,
 			});
-			await this.updateBalanceService.handle({ ...creditTransaction });
-			await this.repository.save(creditTransaction);
 
 			return {
 				idPaymentTrace,
@@ -94,21 +90,9 @@ export default class CreateTransferService {
 		}
 	}
 
-	private validBody(data: any): CreateTransferDTO {
-		try {
-			const schema = z.object({
-				value: z.number().positive(),
-				payer: z.number().positive(),
-				payee: z.number().positive(),
-			});
-
-			const result = schema.safeParse(data);
-			if (!result.success) throw new Error("Zod Error");
-
-			return result.data as CreateTransferDTO;
-		} catch (error) {
-			console.log(error);
-			throw error;
-		}
+	private async effectTransfer(data: EffectTransfer) {
+		const parsedData = transferMapper.toPersistente({ ...data });
+		await this.updateBalanceService.handle({ ...parsedData });
+		await this.repository.save(parsedData);
 	}
 }

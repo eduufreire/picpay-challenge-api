@@ -2,7 +2,7 @@ import CreateUserDTO from "../../interfaces/user/CreateUserDTO";
 import ListUserDTO from "../../interfaces/user/ListUserDTO";
 import User, { UserType } from "../../interfaces/user/User";
 
-export default class UserMapper {
+class UserMapper {
 	public toPersistence(rawData: CreateUserDTO): Omit<User, "id"> {
 		return {
 			name: rawData.name,
@@ -28,3 +28,5 @@ export default class UserMapper {
 		return document.length === 11 ? UserType.USER : UserType.SHOPKEEPER;
 	}
 }
+
+export const userMapper = new UserMapper();
