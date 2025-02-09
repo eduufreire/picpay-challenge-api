@@ -7,15 +7,22 @@ import { PrismaUserRepository } from "../../persistence/implementation/prismaUse
 import TransferController from "../controllers/transferController";
 import UpdateBalanceService from "../../business/services/user/updateBalance";
 import GetTransferService from "../../business/services/transfer/get";
+import NotificationService from "../../business/services/notificationService";
 
 const transferRouter = Router();
 
 const repository = new PrismaTransferRepository(prismaClient);
 const repositoryUser = new PrismaUserRepository(prismaClient);
 
+const notificationService = new NotificationService();
 const getUserService = new GetUserService(repositoryUser);
 const updateBalance = new UpdateBalanceService(repositoryUser);
-const createService = new CreateTransferService(getUserService, updateBalance, repository);
+const createService = new CreateTransferService(
+	repository,
+	getUserService,
+	updateBalance,
+	notificationService,
+);
 const getTransferService = new GetTransferService(repository);
 const transferController = new TransferController(createService, getTransferService);
 

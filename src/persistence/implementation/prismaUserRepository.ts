@@ -1,11 +1,11 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultUserRepository } from "../defaultUserRepository";
-import User, { UserType } from "../../interfaces/user/User";
+import { User, UserType } from "../../interfaces/user/User";
 import { number } from "zod";
 import { errorHandle } from "../../utils/errorHandle";
 import e from "express";
 
-export type PrismaOperation = { decrement: number } | { increment?: number };
+export type PrismaOperation = { decrement?: number } | { increment?: number };
 export class PrismaUserRepository implements DefaultUserRepository {
 	constructor(private client: PrismaClient) {}
 
@@ -25,6 +25,7 @@ export class PrismaUserRepository implements DefaultUserRepository {
 				};
 			});
 		} catch (error) {
+			console.log(error);
 			errorHandle.isPrismaError(error);
 			throw error;
 		}

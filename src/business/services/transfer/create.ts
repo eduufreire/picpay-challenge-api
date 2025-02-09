@@ -1,6 +1,5 @@
 import { CreateTransferDTO } from "../../../interfaces/transfer/CreateTransferDTO";
 import { DefaultTransferRepository } from "../../../persistence/defaultTransferRepository";
-import { z } from "zod";
 import GetUserService from "../user/get";
 import { UserType } from "../../../interfaces/user/User";
 import { TransferType } from "../../../interfaces/transfer/Transfer";
@@ -11,6 +10,8 @@ import { CustomException, errorHandle } from "../../../utils/errorHandle";
 import ParserData from "../../../utils/parserData";
 import { schemaTransfer } from "../../../utils/schemasZod";
 import { transferMapper } from "../../mapper/transferMapper";
+import NotificationService from "../notificationService";
+import { TypeNotification } from "../../../interfaces/notification";
 
 type EffectTransfer = {
 	userId: number;
@@ -21,9 +22,10 @@ type EffectTransfer = {
 
 export default class CreateTransferService {
 	constructor(
+		private repository: DefaultTransferRepository,
 		private getUserService: GetUserService,
 		private updateBalanceService: UpdateBalanceService,
-		private repository: DefaultTransferRepository,
+		private notificationService: NotificationService,
 	) {}
 
 	async handle(rawData: object) {
@@ -33,12 +35,15 @@ export default class CreateTransferService {
 			const payer = await this.getUserService.handle(parsedBody.payer);
 			const payee = await this.getUserService.handle(parsedBody.payee);
 
-			if (payer.balance < parsedBody.value)
-				errorHandle.throwException(
+			console.log(payer);
+
+			if (payer.balance < parsedBody.value) {
+				throw errorHandle.throwException(
 					"TransferException",
 					"Insufficient balance for transfer",
 					409,
 				);
+			}
 
 			if (payer.type === UserType.SHOPKEEPER)
 				errorHandle.throwException(
@@ -74,6 +79,12 @@ export default class CreateTransferService {
 				amount: parsedBody.value,
 				type: TransferType.CREDIT,
 				idPaymentTrace,
+			});
+
+			await this.notificationService.sendNotification({
+				from: "aplicacao-picpay",
+				to: payee.name,
+				type: TypeNotification.EMAIL,
 			});
 
 			return {

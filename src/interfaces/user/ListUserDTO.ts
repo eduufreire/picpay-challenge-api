@@ -1,9 +1,9 @@
-import { TypeUser } from "./User";
+import { UserType } from "./User";
 
 export default interface ListUserDTO {
 	id: number;
 	name: string;
 	document: string;
-	type: TypeUser;
+	type: UserType;
 	balance: number;
 }

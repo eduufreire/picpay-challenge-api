@@ -1,5 +1,5 @@
 import { TransferType } from "../interfaces/transfer/Transfer";
-import User from "../interfaces/user/User";
+import { User } from "../interfaces/user/User";
 
 export abstract class DefaultUserRepository {
 	abstract save(rawData: Omit<User, "id">): Promise<User>;
