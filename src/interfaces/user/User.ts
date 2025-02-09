@@ -3,7 +3,7 @@ export enum UserType {
 	SHOPKEEPER = "SHOPKEEPER",
 }
 
-export default interface User {
+export interface User {
 	id: number;
 	name: string;
 	document: string;

@@ -8,7 +8,7 @@ type OptionsRequest = {
 };
 
 type ResponseRequest = {
-	statusCode: string;
+	statusCode: number;
 	body: any;
 	success: boolean;
 };
@@ -26,7 +26,7 @@ export default class RequestHelper {
 
 			return {
 				body: response.data,
-				statusCode: response.statusText,
+				statusCode: response.status,
 				success: true,
 			};
 		} catch (error) {
@@ -34,7 +34,7 @@ export default class RequestHelper {
 				const e = error as AxiosError;
 				return {
 					body: e.message,
-					statusCode: e.status?.toString() || "500",
+					statusCode: e.status || 500,
 					success: false,
 				};
 			}
