@@ -25,6 +25,7 @@ export class PrismaUserRepository implements DefaultUserRepository {
 				};
 			});
 		} catch (error) {
+			console.log(error);
 			errorHandle.isPrismaError(error);
 			throw error;
 		}

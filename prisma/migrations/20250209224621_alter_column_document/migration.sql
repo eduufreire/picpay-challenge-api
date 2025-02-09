@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "document" SET DATA TYPE VARCHAR(18),
+ALTER COLUMN "balance" SET DEFAULT 0.0;

@@ -8,7 +8,10 @@ export const schemaTransfer = z.object({
 
 export const schemaUser = z.object({
 	name: z.string(),
-	document: z.string().min(11).max(18),
+	document: z
+		.string()
+		.min(11)
+		.max(18),
 	email: z.string().email(),
 	password: z.string(),
 });
