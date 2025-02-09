@@ -11,9 +11,4 @@ export default class TransferMapper {
 			createdAt: DateUtils.getDateNow(),
 		};
 	}
-
-	private generateIdPaymentTrace() {
-		console.log("Gerando id trace");
-		return uuidv4();
-	}
 }

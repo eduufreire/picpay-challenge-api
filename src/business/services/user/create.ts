@@ -4,6 +4,7 @@ import { z } from "zod";
 import UserMapper from "../../mapper/userMapper";
 import User from "../../../interfaces/user/User";
 import ListUserDTO from "../../../interfaces/user/ListUserDTO";
+import { errorHandle } from "../../../utils/errorHandle";
 
 export default class CreateUserService {
 	constructor(private repository: DefaultUserRepository) {}
@@ -25,21 +26,17 @@ export default class CreateUserService {
 	}
 
 	private validBody(data: any): CreateUserDTO {
-		try {
-			const schema = z.object({
-				name: z.string(),
-				document: z.string().min(11).max(18),
-				email: z.string().email(),
-				password: z.string(),
-			});
+		const schema = z.object({
+			name: z.string(),
+			document: z.string().min(11).max(18),
+			email: z.string().email(),
+			password: z.string(),
+		});
 
-			const result = schema.safeParse(data);
-			if (!result.success) throw new Error("Zod Error");
+		const result = schema.safeParse(data);
+		if (!result.success)
+			errorHandle.throwException("ZodError", result.error );
 
-			return result.data as CreateUserDTO;
-		} catch (error) {
-			console.log(error);
-			throw error;
-		}
+		return result.data as CreateUserDTO;
 	}
 }

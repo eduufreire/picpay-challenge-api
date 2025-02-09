@@ -8,6 +8,7 @@ import { TransferType } from "../../../interfaces/transfer/Transfer";
 import UpdateBalanceService from "../user/updateBalance";
 import { v4 as uuidv4 } from "uuid";
 import AuthorizerService from "../authorizerService";
+import { CustomException, errorHandle } from "../../../utils/errorHandle";
 
 export default class CreateTransferService {
 	constructor(
@@ -22,16 +23,22 @@ export default class CreateTransferService {
 			const parsedBody: CreateTransferDTO = this.validBody(rawData);
 
 			const payer = await this.getUserService.handle(parsedBody.payer);
-			if (!payer) throw new Error("Pagador não existe");
 
 			const payee = await this.getUserService.handle(parsedBody.payee);
-			if (!payee) throw new Error("Beneficiário/Recebedor não existe");
 
 			if (payer.balance < parsedBody.value)
-				throw new Error("Valor insuficiente na carteira");
+				errorHandle.throwException(
+					"TransferException",
+					"Insufficient balance for transfer",
+					409,
+				);
 
 			if (payer.type === UserType.SHOPKEEPER)
-				throw new Error("Lojista não pode tranferir");
+				errorHandle.throwException(
+					"TransferException",
+					"Shopkeeper cannot make transfer",
+					409,
+				);
 
 			const idPaymentTrace = uuidv4();
 
@@ -57,7 +64,11 @@ export default class CreateTransferService {
 				});
 				await this.updateBalanceService.handle({ ...reversalTransfer });
 				await this.repository.save(reversalTransfer);
-				throw new Error("Transação nao autorizada - Estorno realizado");
+				errorHandle.throwException(
+					"TransferException",
+					"Unauthorized transfer",
+					403,
+				);
 			}
 
 			const creditTransaction = this.mapper.toPersistente({
@@ -75,7 +86,10 @@ export default class CreateTransferService {
 				status: "success",
 			};
 		} catch (error) {
-			console.log(error);
+			if (!(error instanceof CustomException)) {
+				const e = error as Error;
+				throw errorHandle.throwException("UnexpectedError", e.message);
+			}
 			throw error;
 		}
 	}

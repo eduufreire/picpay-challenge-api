@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { errorHandle } from "./errorHandle";
 
 type OptionsRequest = {
 	url: string;
@@ -38,7 +39,7 @@ export default class RequestHelper {
 				};
 			}
 
-			throw error;
+			throw errorHandle.throwException("UnexpectedError", "An unexpected error occurred");
 		}
 	}
 }

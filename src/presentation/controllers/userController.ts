@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import CreateUserService from "../../business/services/user/create";
 import GetUserService from "../../business/services/user/get";
+import { CustomException } from "../../utils/errorHandle";
 
 export default class UserController {
 	constructor(
@@ -16,8 +17,11 @@ export default class UserController {
 			const result = await this.createService.handle(request.body);
 			return response.status(201).json(result);
 		} catch (error) {
-			console.log(error);
-			return response.status(500).json(error);
+			const e = error as CustomException;
+			return response.status(e.statausCode).json({
+				statusCode: e.statausCode,
+				message: e.message,
+			});
 		}
 	}
 
@@ -27,8 +31,11 @@ export default class UserController {
 			const result = await this.getService.handle(Number(id));
 			return response.status(200).json(result);
 		} catch (error) {
-			console.log(error);
-			return response.status(500).json(error);
+			const e = error as CustomException;
+			return response.status(e.statausCode).json({
+				statusCode: e.statausCode,
+				message: e.message,
+			});
 		}
 	}
 }

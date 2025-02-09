@@ -1,7 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Transfer, TransferType } from "../../interfaces/transfer/Transfer";
 import { DefaultTransferRepository } from "../defaultTransferRepository";
 import { raw } from "@prisma/client/runtime/library";
+import e from "express";
+import { errorHandle } from "../../utils/errorHandle";
 
 export default class PrismaTransferRepository implements DefaultTransferRepository {
 	constructor(private client: PrismaClient) {}
@@ -14,8 +16,6 @@ export default class PrismaTransferRepository implements DefaultTransferReposito
 				},
 			});
 
-			console.log(result);
-
 			return {
 				...result,
 				amount: result.amount as unknown as number,
@@ -23,7 +23,12 @@ export default class PrismaTransferRepository implements DefaultTransferReposito
 				createdAt: result.createdAt,
 			};
 		} catch (error) {
-			console.log(error);
+			if (
+				error instanceof Prisma.PrismaClientKnownRequestError ||
+				error instanceof Prisma.PrismaClientUnknownRequestError
+			) {
+				throw errorHandle.throwException("DatabaseException", error.message, 500);
+			}
 			throw error;
 		}
 	}

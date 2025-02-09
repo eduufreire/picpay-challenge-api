@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultUserRepository } from "../defaultUserRepository";
 import User, { UserType } from "../../interfaces/user/User";
-import { TransferType } from "../../interfaces/transfer/Transfer";
 import { number } from "zod";
+import { errorHandle } from "../../utils/errorHandle";
+import e from "express";
 
 export type PrismaOperation = { decrement: number } | { increment?: number };
 export class PrismaUserRepository implements DefaultUserRepository {
@@ -24,7 +25,7 @@ export class PrismaUserRepository implements DefaultUserRepository {
 				};
 			});
 		} catch (error) {
-			console.log(error);
+			errorHandle.isPrismaError(error);
 			throw error;
 		}
 	}
@@ -45,7 +46,7 @@ export class PrismaUserRepository implements DefaultUserRepository {
 				type: result.type as UserType,
 			};
 		} catch (error) {
-			console.log(error);
+			errorHandle.isPrismaError(error);
 			throw error;
 		}
 	}
@@ -69,7 +70,7 @@ export class PrismaUserRepository implements DefaultUserRepository {
 				};
 			});
 		} catch (error) {
-			console.log(error);
+			errorHandle.isPrismaError(error);
 			throw error;
 		}
 	}

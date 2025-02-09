@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CreateTransferService from "../../business/services/transfer/create";
+import { CustomException } from "../../utils/errorHandle";
 
 export default class TransferController {
 	constructor(private transferService: CreateTransferService) {}
@@ -9,7 +10,12 @@ export default class TransferController {
 			const result = await this.transferService.handle(request.body);
 			return response.status(201).json(result);
 		} catch (error) {
-			return response.status(500).json();
+			const e = error as CustomException;
+			console.log(e);
+			return response.status(e.statausCode).json({
+				statusCode: e.statausCode,
+				message: e.message,
+			});
 		}
 	}
 }
