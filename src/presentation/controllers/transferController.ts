@@ -25,7 +25,7 @@ export default class TransferController {
 	async getTransfer(request: Request, response: Response): Promise<any> {
 		try {
 			const result = await this.getTransferService.handle(request.params.idPaymentTrace);
-			return response.status(201).json(result);
+			return response.status(200).json(result);
 		} catch (error) {
 			const e = error as CustomException;
 			return response.status(e.statausCode).json({

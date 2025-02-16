@@ -1,14 +1,13 @@
 import CreateUserDTO from "../../../interfaces/user/CreateUserDTO";
 import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
-import { z } from "zod";
 import { userMapper } from "../../mapper/userMapper";
 import ListUserDTO from "../../../interfaces/user/ListUserDTO";
-import { errorHandle } from "../../../utils/errorHandle";
 import ParserData from "../../../utils/parserData";
 import { schemaUser } from "../../../utils/schemasZod";
 import HashHelper from "../../../utils/hashHelper";
+import { CreateService } from "../../../interfaces/CreateService";
 
-export default class CreateUserService {
+export default class CreateUserService implements CreateService {
 	constructor(private repository: DefaultUserRepository) {}
 
 	async handle(body: object): Promise<ListUserDTO> {
@@ -16,7 +15,6 @@ export default class CreateUserService {
 			const parsedBody: CreateUserDTO = ParserData.valid(schemaUser, body);
 
 			parsedBody.document = ParserData.removeSpecialCharacters(parsedBody.document);
-			console.log(parsedBody);
 
 			const user = userMapper.toPersistence({ ...parsedBody });
 			user.password = await HashHelper.encrypt(user.password);

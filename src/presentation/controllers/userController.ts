@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import CreateUserService from "../../business/services/user/create";
 import GetUserService from "../../business/services/user/get";
 import { CustomException } from "../../utils/errorHandle";
-import { userMapper } from "../../business/mapper/userMapper";
 
 export default class UserController {
 	constructor(

@@ -1,16 +1,9 @@
-import axios, { AxiosError } from "axios";
+import { Authorizer, ParamsAuthorizer } from "../../interfaces/Authorizer";
 import RequestHelper from "../../utils/requestHelper";
 
-type CallAuthorizer = {
-	payer: number;
-	payee: number;
-	amount: number;
-};
+export default class AuthorizerService implements Authorizer {
 
-export default class AuthorizerService {
-	private constructor() {}
-
-	static async checkTransfer(data: CallAuthorizer): Promise<boolean> {
+	async checkTransfer(data: ParamsAuthorizer): Promise<boolean> {
 		const result = await RequestHelper.request({
 			url: "https://util.devi.tools/api/v2/authorize",
 			method: "GET",

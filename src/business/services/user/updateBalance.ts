@@ -1,9 +1,10 @@
 import { TransferType } from "../../../interfaces/transfer/Transfer";
+import { UpdateBalance } from "../../../interfaces/user/UpdateBalance";
 import { UpdateUserBalanceDTO } from "../../../interfaces/user/UpdateUserBalanceDTO";
 import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
 import { PrismaOperation } from "../../../persistence/implementation/prismaUserRepository";
 
-export default class UpdateBalanceService {
+export default class UpdateBalanceService implements UpdateBalance {
 	constructor(private repository: DefaultUserRepository) {}
 
 	async handle(rawData: UpdateUserBalanceDTO) {

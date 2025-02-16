@@ -8,12 +8,14 @@ import TransferController from "../controllers/transferController";
 import UpdateBalanceService from "../../business/services/user/updateBalance";
 import GetTransferService from "../../business/services/transfer/get";
 import NotificationService from "../../business/services/notificationService";
+import AuthorizerService from "../../business/services/authorizerService";
 
 const transferRouter = Router();
 
 const repository = new PrismaTransferRepository(prismaClient);
 const repositoryUser = new PrismaUserRepository(prismaClient);
 
+const authorizationService = new AuthorizerService();
 const notificationService = new NotificationService();
 const getUserService = new GetUserService(repositoryUser);
 const updateBalance = new UpdateBalanceService(repositoryUser);
@@ -22,6 +24,7 @@ const createService = new CreateTransferService(
 	getUserService,
 	updateBalance,
 	notificationService,
+	authorizationService,
 );
 const getTransferService = new GetTransferService(repository);
 const transferController = new TransferController(createService, getTransferService);

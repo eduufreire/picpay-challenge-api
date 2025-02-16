@@ -1,10 +1,10 @@
-import { Request } from "express";
 import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
 import { errorHandle } from "../../../utils/errorHandle";
 import { userMapper } from "../../mapper/userMapper";
 import ListUserDTO from "../../../interfaces/user/ListUserDTO";
+import { GetUser } from "../../../interfaces/user/GetUser";
 
-export default class GetUserService {
+export default class GetUserService implements GetUser{
 	constructor(private repository: DefaultUserRepository) {}
 
 	async handle(id: number): Promise<ListUserDTO> {

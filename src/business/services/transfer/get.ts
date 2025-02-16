@@ -9,7 +9,7 @@ export default class GetTransferService {
 		try {
 			const result = await this.repository.getByPaymentTrace(paymentTrace);
 
-			if (!result)
+			if (result.length === 0)
 				errorHandle.throwException("TransferException", "Transfer not found", 404);
 
 			const dto = [];
