@@ -1,8 +1,8 @@
-import { UserType } from "@prisma/client";
 import { Authorizer } from "../../interfaces/Authorizer";
 import { NotificationService } from "../../interfaces/Notification";
 import { GetUser } from "../../interfaces/user/GetUser";
 import { UpdateBalance } from "../../interfaces/user/UpdateBalance";
+import { UserType } from "../../interfaces/user/User";
 
 export const mockSuccessGetUser: jest.Mocked<GetUser> = {
 	handle: jest.fn().mockResolvedValue({

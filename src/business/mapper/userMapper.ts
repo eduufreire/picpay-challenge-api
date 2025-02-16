@@ -35,12 +35,12 @@ class UserMapper {
 			if (!cpf.isValid(document)) {
 				throw errorHandle.throwException("UserException", "Invalid document", 400);
 			}
+			return document;
 		}
 
 		if (!cnpj.isValid(document)) {
 			throw errorHandle.throwException("UserException", "Invalid document", 400);
 		}
-
 		return document;
 	}
 }

@@ -4,8 +4,9 @@
   "main": "./dist/server.js",
   "scripts": {
     "start": "node ./dist/server.js",
-    "build": "tsc --build && npm start",
+    "build": "tsc --build",
     "dev": "tsx --watch ./src/server.ts",
+    "database": "prisma migrate deploy",
     "test": "jest"
   },
   "author": "Edu Freire",

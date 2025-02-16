@@ -1,8 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Transfer, TransferType } from "../../interfaces/transfer/Transfer";
 import { DefaultTransferRepository } from "../defaultTransferRepository";
-import { raw } from "@prisma/client/runtime/library";
-import e from "express";
 import { errorHandle } from "../../utils/errorHandle";
 
 export default class PrismaTransferRepository implements DefaultTransferRepository {

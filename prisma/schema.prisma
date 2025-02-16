@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://user_picpay:123456789@db:5432/database_picpay?schema=public"
 }
 
 model User {
