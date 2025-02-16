@@ -8,7 +8,7 @@ import type { JestConfigWithTsJest } from "ts-jest";
 const config: JestConfigWithTsJest = {
 	// All imported modules in your tests should be mocked automatically
 	// automock: false,
-  preset: 'ts-jest',
+	preset: "ts-jest",
 	// Stop running tests after `n` failures
 	bail: 1,
 
@@ -161,9 +161,7 @@ const config: JestConfigWithTsJest = {
 	// ],
 
 	// An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-	// testPathIgnorePatterns: [
-	//   "\\\\node_modules\\\\"
-	// ],
+	testPathIgnorePatterns: ["\\\\node_modules\\\\", "./src/__tests__/mocks"],
 
 	// The regexp pattern or array of patterns that Jest uses to detect test files
 	// testRegex: [],
