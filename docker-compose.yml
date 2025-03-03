@@ -1,0 +1,35 @@
+services:
+  database:
+    container_name: database-postgre
+    image: postgres:latest
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - api-picpay:/var/lib/postgres
+    environment:
+      POSTGRES_USER: user_picpay
+      POSTGRES_PASSWORD: 123456789
+      POSTGRES_DB: database_picpay 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+  
+  api-picpay:
+    container_name: api-rest
+    build: .
+    depends_on:
+      database:
+        condition: service_healthy
+    command: sh -c "npm run database && npm run start"
+    volumes:
+      - api-picpay:/var/lib/application
+    ports:
+      - 127.0.0.1:8080:8080
+    links:
+      - "database:db"
+
+volumes:
+  api-picpay:

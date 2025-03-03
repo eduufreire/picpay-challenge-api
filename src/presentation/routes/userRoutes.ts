@@ -1,18 +1,12 @@
 import { Router } from "express";
-import { PrismaUserRepository } from "../../persistence/implementation/prismaUserRepository";
-import CreateUserService from "../../business/services/user/create";
 import UserController from "../controllers/userController";
-import { prismaClient } from "../../persistence/implementation";
-import GetUserService from "../../business/services/user/get";
+import { container } from "../../containers/dependencies";
 
 const userRouter = Router();
 
-const repository = new PrismaUserRepository(prismaClient);
-const createService = new CreateUserService(repository);
-const getAllService = new GetUserService(repository);
-const userController = new UserController(createService, getAllService);
+const controller = container.get(UserController);
 
-userRouter.post("/", (request, response) => userController.create(request, response));
-userRouter.get("/:id", (request, response) => userController.getById(request, response));
+userRouter.post("/", (request, response) => controller.create(request, response));
+userRouter.get("/:id", (request, response) => controller.getById(request, response));
 
 export default userRouter;

@@ -1,17 +1,19 @@
 import { CreateTransferDTO } from "../../../interfaces/transfer/CreateTransferDTO";
 import { DefaultTransferRepository } from "../../../persistence/defaultTransferRepository";
-import GetUserService from "../user/get";
 import { UserType } from "../../../interfaces/user/User";
 import { TransferType } from "../../../interfaces/transfer/Transfer";
-import UpdateBalanceService from "../user/updateBalance";
 import { v4 as uuidv4 } from "uuid";
-import AuthorizerService from "../authorizerService";
 import { CustomException, errorHandle } from "../../../utils/errorHandle";
 import ParserData from "../../../utils/parserData";
 import { schemaTransfer } from "../../../utils/schemasZod";
 import { transferMapper } from "../../mapper/transferMapper";
 import NotificationService from "../notificationService";
-import { TypeNotification } from "../../../interfaces/notification";
+import { TypeNotification } from "../../../interfaces/Notification";
+import { GetUser } from "../../../interfaces/user/GetUser";
+import { UpdateBalance } from "../../../interfaces/user/UpdateBalance";
+import { CreateService } from "../../../interfaces/CreateService";
+import { Authorizer } from "../../../interfaces/Authorizer";
+import { inject, injectable } from "inversify";
 
 type EffectTransfer = {
 	userId: number;
@@ -20,12 +22,19 @@ type EffectTransfer = {
 	type: TransferType;
 };
 
-export default class CreateTransferService {
+@injectable()
+export default class CreateTransferService implements CreateService {
 	constructor(
+		@inject("TransferRepository")
 		private repository: DefaultTransferRepository,
-		private getUserService: GetUserService,
-		private updateBalanceService: UpdateBalanceService,
+		@inject("GetUser")
+		private getUserService: GetUser,
+		@inject("UpdateBalance")
+		private updateBalanceService: UpdateBalance,
+		@inject("NotificationService")
 		private notificationService: NotificationService,
+		@inject("AuthorizerService")
+		private authorizationService: Authorizer,
 	) {}
 
 	async handle(rawData: object) {
@@ -34,8 +43,6 @@ export default class CreateTransferService {
 
 			const payer = await this.getUserService.handle(parsedBody.payer);
 			const payee = await this.getUserService.handle(parsedBody.payee);
-
-			console.log(payer);
 
 			if (payer.balance < parsedBody.value) {
 				throw errorHandle.throwException(
@@ -60,7 +67,7 @@ export default class CreateTransferService {
 				idPaymentTrace,
 			});
 
-			const isValidTransfer = await AuthorizerService.checkTransfer({
+			const isValidTransfer = await this.authorizationService.checkTransfer({
 				...parsedBody,
 				amount: parsedBody.value,
 			});
@@ -81,7 +88,7 @@ export default class CreateTransferService {
 				idPaymentTrace,
 			});
 
-			await this.notificationService.sendNotification({
+			await this.notificationService.send({
 				from: "aplicacao-picpay",
 				to: payee.name,
 				type: TypeNotification.EMAIL,

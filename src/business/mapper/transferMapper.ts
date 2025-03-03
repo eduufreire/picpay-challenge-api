@@ -1,6 +1,5 @@
 import { ListTransferDTO } from "../../interfaces/transfer/ListTransferDTO";
 import { Transfer } from "../../interfaces/transfer/Transfer";
-import User from "../../interfaces/user/User";
 import DateUtils from "../../utils/date";
 
 class TransferMapper {

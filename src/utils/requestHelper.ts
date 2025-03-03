@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { errorHandle } from "./errorHandle";
 
-type OptionsRequest = {
+export type OptionsRequest = {
 	url: string;
 	method: "GET" | "POST";
 	data?: any;

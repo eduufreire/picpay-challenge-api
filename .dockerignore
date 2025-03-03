@@ -1,0 +1,9 @@
+node_modules
+dist
+*.log
+*.env
+.git
+jest.config.ts
+biome.json
+.gitignore
+coverage
