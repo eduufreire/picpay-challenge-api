@@ -6,9 +6,14 @@ import ParserData from "../../../utils/parserData";
 import { schemaUser } from "../../../utils/schemasZod";
 import HashHelper from "../../../utils/hashHelper";
 import { CreateService } from "../../../interfaces/CreateService";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export default class CreateUserService implements CreateService {
-	constructor(private repository: DefaultUserRepository) {}
+	constructor(
+		@inject("UserRepository")
+		private repository: DefaultUserRepository,
+	) {}
 
 	async handle(body: object): Promise<ListUserDTO> {
 		try {

@@ -2,10 +2,13 @@ import { Request, Response } from "express";
 import CreateUserService from "../../business/services/user/create";
 import GetUserService from "../../business/services/user/get";
 import { CustomException } from "../../utils/errorHandle";
+import { inject, injectable } from "inversify";
 
 export default class UserController {
 	constructor(
-		private createService: CreateUserService,
+		@inject("CreateUser")
+		public readonly createService: CreateUserService,
+		@inject("GetUser")
 		private getService: GetUserService,
 	) {}
 

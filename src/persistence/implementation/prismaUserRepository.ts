@@ -2,10 +2,11 @@ import { PrismaClient } from "@prisma/client";
 import { DefaultUserRepository } from "../defaultUserRepository";
 import { User, UserType } from "../../interfaces/user/User";
 import { errorHandle } from "../../utils/errorHandle";
+import { prismaClient } from ".";
 
 export type PrismaOperation = { decrement?: number } | { increment?: number };
 export class PrismaUserRepository implements DefaultUserRepository {
-	constructor(private client: PrismaClient) {}
+	constructor(private client: PrismaClient = prismaClient) {}
 
 	async save(rawData: Omit<User, "id">): Promise<User> {
 		try {

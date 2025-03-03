@@ -1,9 +1,14 @@
+import { inject, injectable } from "inversify";
 import { DefaultTransferRepository } from "../../../persistence/defaultTransferRepository";
 import { errorHandle } from "../../../utils/errorHandle";
 import { transferMapper } from "../../mapper/transferMapper";
 
+@injectable()
 export default class GetTransferService {
-	constructor(private repository: DefaultTransferRepository) {}
+	constructor(
+		@inject("TransferRepository")
+		private repository: DefaultTransferRepository
+	) {}
 
 	async handle(paymentTrace: string) {
 		try {

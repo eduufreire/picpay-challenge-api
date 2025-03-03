@@ -1,11 +1,16 @@
+import { inject, injectable } from "inversify";
 import { TransferType } from "../../../interfaces/transfer/Transfer";
 import { UpdateBalance } from "../../../interfaces/user/UpdateBalance";
 import { UpdateUserBalanceDTO } from "../../../interfaces/user/UpdateUserBalanceDTO";
 import { DefaultUserRepository } from "../../../persistence/defaultUserRepository";
 import { PrismaOperation } from "../../../persistence/implementation/prismaUserRepository";
 
+@injectable()
 export default class UpdateBalanceService implements UpdateBalance {
-	constructor(private repository: DefaultUserRepository) {}
+	constructor(
+		@inject("UserRepository")
+		private repository: DefaultUserRepository
+	) {}
 
 	async handle(rawData: UpdateUserBalanceDTO) {
 		try {

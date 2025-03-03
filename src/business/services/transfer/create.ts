@@ -13,6 +13,7 @@ import { GetUser } from "../../../interfaces/user/GetUser";
 import { UpdateBalance } from "../../../interfaces/user/UpdateBalance";
 import { CreateService } from "../../../interfaces/CreateService";
 import { Authorizer } from "../../../interfaces/Authorizer";
+import { inject, injectable } from "inversify";
 
 type EffectTransfer = {
 	userId: number;
@@ -21,12 +22,18 @@ type EffectTransfer = {
 	type: TransferType;
 };
 
+@injectable()
 export default class CreateTransferService implements CreateService {
 	constructor(
+		@inject("TransferRepository")
 		private repository: DefaultTransferRepository,
+		@inject("GetUser")
 		private getUserService: GetUser,
+		@inject("UpdateBalance")
 		private updateBalanceService: UpdateBalance,
+		@inject("NotificationService")
 		private notificationService: NotificationService,
+		@inject("AuthorizerService")
 		private authorizationService: Authorizer,
 	) {}
 

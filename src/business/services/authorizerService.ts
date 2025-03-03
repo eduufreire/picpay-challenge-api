@@ -1,6 +1,8 @@
+import { injectable } from "inversify";
 import { Authorizer, ParamsAuthorizer } from "../../interfaces/Authorizer";
 import RequestHelper from "../../utils/requestHelper";
 
+@injectable()
 export default class AuthorizerService implements Authorizer {
 
 	async checkTransfer(data: ParamsAuthorizer): Promise<boolean> {

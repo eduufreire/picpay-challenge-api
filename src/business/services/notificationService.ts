@@ -1,6 +1,8 @@
+import { injectable } from "inversify";
 import { NotificationStrategy, SendNotification } from "../../interfaces/Notification";
 import { notificationFactory } from "../patterns/notificationFactory";
 
+@injectable()
 export default class NotificationService implements NotificationService {
 	async send(data: SendNotification) {
 		try {

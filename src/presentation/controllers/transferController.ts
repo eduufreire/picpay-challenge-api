@@ -2,10 +2,13 @@ import { Request, Response } from "express";
 import CreateTransferService from "../../business/services/transfer/create";
 import { CustomException } from "../../utils/errorHandle";
 import GetTransferService from "../../business/services/transfer/get";
+import { inject } from "inversify";
 
 export default class TransferController {
 	constructor(
+		@inject("CreateTransfer")
 		private transferService: CreateTransferService,
+		@inject("GetTransfer")
 		private getTransferService: GetTransferService,
 	) {}
 
