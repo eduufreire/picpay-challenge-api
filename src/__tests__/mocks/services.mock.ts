@@ -1,6 +1,5 @@
-import GetTransferService from "../../business/services/transfer/get";
 import { Authorizer } from "../../interfaces/Authorizer";
-import { NotificationService } from "../../interfaces/Notification";
+import { NotificationService } from "../../interfaces/notification";
 import { GetUser } from "../../interfaces/user/GetUser";
 import { UpdateBalance } from "../../interfaces/user/UpdateBalance";
 import { UserType } from "../../interfaces/user/User";
@@ -14,6 +13,10 @@ export const mockSuccessGetUser: jest.Mocked<GetUser> = {
 		type: UserType.USER,
 		balance: 1000.0,
 	}),
+};
+
+export const mockFailureGetUser: jest.Mocked<GetUser> = {
+	handle: jest.fn().mockRejectedValue({}),
 };
 
 export const mockFailureTypeGetUser: jest.Mocked<GetUser> = {

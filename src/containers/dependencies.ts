@@ -16,6 +16,7 @@ import { GetUser } from "../interfaces/user/GetUser";
 import GetUserService from "../business/services/user/get";
 import UserController from "../presentation/controllers/userController";
 import TransferController from "../presentation/controllers/transferController";
+import { RechargeAccountUser } from "../business/services/user/recharge";
 
 const container: Container = new Container();
 
@@ -24,6 +25,7 @@ container.bind("NotificationService").to(NotificationService);
 container.bind<DefaultTransferRepository>("TransferRepository").to(PrismaTransferRepository);
 container.bind<CreateService>("CreateTransfer").to(CreateTransferService);
 container.bind<UpdateBalance>("UpdateBalance").to(UpdateBalanceService);
+container.bind<RechargeAccountUser>("RechargeService").to(RechargeAccountUser);
 container.bind("GetTransfer").to(GetTransferService);
 container.bind<DefaultUserRepository>("UserRepository").to(PrismaUserRepository);
 container.bind<CreateService>("CreateUser").to(CreateUserService);

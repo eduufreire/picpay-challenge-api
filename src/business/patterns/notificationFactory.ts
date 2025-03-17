@@ -1,4 +1,4 @@
-import { NotificationStrategy, TypeNotification } from "../../interfaces/Notification";
+import { NotificationStrategy, TypeNotification } from "../../interfaces/notification";
 import { errorHandle } from "../../utils/errorHandle";
 import { EmailNotification, QueueNotification, SmsNotification } from "./notificationStrategy";
 

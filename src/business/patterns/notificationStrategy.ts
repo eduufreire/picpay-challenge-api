@@ -1,4 +1,4 @@
-import { NotificationStrategy } from "../../interfaces/Notification";
+import { NotificationStrategy } from "../../interfaces/notification";
 import { errorHandle } from "../../utils/errorHandle";
 import RequestHelper from "../../utils/requestHelper";
 

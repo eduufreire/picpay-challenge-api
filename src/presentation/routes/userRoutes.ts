@@ -8,5 +8,6 @@ const controller = container.get(UserController);
 
 userRouter.post("/", (request, response) => controller.create(request, response));
 userRouter.get("/:id", (request, response) => controller.getById(request, response));
+userRouter.put("/recharge", (request, response) => controller.rechargeAccount(request, response))
 
 export default userRouter;

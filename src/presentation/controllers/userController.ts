@@ -3,6 +3,8 @@ import CreateUserService from "../../business/services/user/create";
 import GetUserService from "../../business/services/user/get";
 import { CustomException } from "../../utils/errorHandle";
 import { inject, injectable } from "inversify";
+import { UpdateBalance } from "../../interfaces/user/UpdateBalance";
+import { RechargeAccountUser } from "../../business/services/user/recharge";
 
 export default class UserController {
 	constructor(
@@ -10,6 +12,8 @@ export default class UserController {
 		public readonly createService: CreateUserService,
 		@inject("GetUser")
 		private getService: GetUserService,
+		@inject("RechargeService")
+		private rechargeService: RechargeAccountUser,
 	) {}
 
 	async create(request: Request, response: Response): Promise<any> {
@@ -30,6 +34,20 @@ export default class UserController {
 			const { id } = request.params;
 			const result = await this.getService.handle(Number(id));
 			return response.status(200).json(result);
+		} catch (error) {
+			const e = error as CustomException;
+			return response.status(e.statausCode).json({
+				statusCode: e.statausCode,
+				message: e.message,
+			});
+		}
+	}
+
+	async rechargeAccount(request: Request, response: Response): Promise<any> {
+		try {
+			const { userId, amount } = request.body;
+			await this.rechargeService.handle(Number(userId), amount);
+			return response.status(200).json("Sucessfully recharge");
 		} catch (error) {
 			const e = error as CustomException;
 			return response.status(e.statausCode).json({

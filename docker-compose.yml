@@ -24,6 +24,8 @@ services:
       database:
         condition: service_healthy
     command: sh -c "npm run database && npm run start"
+    environment:
+      - DATABASE_URL=postgresql://user_picpay:123456789@db:5432/database_picpay?schema=public
     volumes:
       - api-picpay:/var/lib/application
     ports:

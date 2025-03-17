@@ -8,7 +8,7 @@ import ParserData from "../../../utils/parserData";
 import { schemaTransfer } from "../../../utils/schemasZod";
 import { transferMapper } from "../../mapper/transferMapper";
 import NotificationService from "../notificationService";
-import { TypeNotification } from "../../../interfaces/Notification";
+import { TypeNotification } from "../../../interfaces/notification";
 import { GetUser } from "../../../interfaces/user/GetUser";
 import { UpdateBalance } from "../../../interfaces/user/UpdateBalance";
 import { CreateService } from "../../../interfaces/CreateService";

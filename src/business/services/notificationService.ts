@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { NotificationStrategy, SendNotification } from "../../interfaces/Notification";
+import { NotificationStrategy, SendNotification } from "../../interfaces/notification";
 import { notificationFactory } from "../patterns/notificationFactory";
 
 @injectable()
